@@ -6,19 +6,19 @@ Aplicación web para generar scripts de **tests `unittest` en Python** a partir 
 
 ## ¿Qué hace el programa?
 
-Benjutester envía un prompt a Gemini y devuelve un archivo `test_ejercicio.py` listo para copiar o descargar.
+Benjutester envía un prompt a **Ollama local** y devuelve un archivo `test_ejercicio.py` listo para copiar o descargar.
 
 Incluye:
 - plantillas de estilo de test (académico, pedagógico, robustez),
 - selector de modelo de IA,
-- configuración de API Key desde la interfaz.
+- configuración de URL/modelo de Ollama desde la interfaz.
 
 ## Qué hay que hacer para usarlo
 
 1. Escribe la descripción del ejercicio.
 2. Sube el archivo Python de la solución (`.py`).
-3. Pega tu API Key de Gemini en la barra lateral.
-4. Elige el modelo.
+3. Asegúrate de tener Ollama levantado en tu máquina.
+4. Indica la URL de Ollama y el modelo en la barra lateral.
 5. Pulsa **Generar pruebas unitarias**.
 6. Copia o descarga el script generado.
 
@@ -33,6 +33,13 @@ npm run dev
 
 La app queda disponible en `http://localhost:3000`.
 
+Además, necesitas Ollama en local:
+
+```bash
+ollama serve
+ollama pull llama3.1:8b
+```
+
 ## Despliegue online (hosting)
 
 Al ser una app Vite, puedes desplegarla en Netlify, Vercel, Cloudflare Pages o similar:
@@ -44,19 +51,11 @@ npm run build
 
 Publica la carpeta `dist/`.
 
-### Importante sobre la API Key
+### Importante sobre Ollama
 
-- La app permite introducir la API Key desde el navegador y la guarda en `sessionStorage` (persiste tras recargas en la misma pestaña y se borra al cerrar la pestaña/ventana).
-- Para uso público real (muchos usuarios), lo recomendable es mover la llamada a Gemini a un backend/proxy para no exponer claves de servidor.
-- **Aviso de seguridad:** introducir la API Key en cliente la hace accesible a scripts del navegador y visible desde DevTools; úsalo solo para pruebas personales o entornos controlados.
-
-## IA recomendada para este caso
-
-### Opción más interesante (calidad)
-- **Gemini 2.5 Pro**: mejor razonamiento para generar tests complejos y más consistentes.
-
-### Opción más rentable (coste/rendimiento)
-- **Gemini 2.5 Flash**: más rápido y barato, ideal para uso continuo.
+- La app llama a la API HTTP de Ollama (por defecto `http://localhost:11434`).
+- Debes tener descargado el modelo que pongas en el campo de modelo (por ejemplo, `llama3.1:8b`).
+- Si usas otro host/puerto, ajusta la URL base en la barra lateral.
 
 ## ¿Tiene sentido incluir IA aquí?
 
@@ -67,4 +66,4 @@ Si quieres minimizar coste:
 - limita longitud de prompts/código,
 - y aplica caché o reintentos controlados.
 
-Sin pagar nada de forma indefinida no suele ser viable en producción: normalmente dependes de cuotas gratuitas limitadas o de infraestructura propia.
+Con Ollama local evitas cuotas de APIs externas, pero dependes de los recursos de tu propia máquina.

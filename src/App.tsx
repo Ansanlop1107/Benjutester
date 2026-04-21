@@ -4,7 +4,6 @@
  */
 
 import { useState, useRef, ChangeEvent, useEffect } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import { 
   Beaker, 
   Upload, 
@@ -57,8 +56,9 @@ INSTRUCCIONES DE FORMATO:
 `;
 
 const MODEL_OPTIONS = [
-  { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (rápido y económico)' },
-  { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro (mayor calidad)' },
+  { id: 'llama3.1:8b', label: 'Llama 3.1 8B' },
+  { id: 'qwen2.5-coder:7b', label: 'Qwen 2.5 Coder 7B' },
+  { id: 'mistral:7b', label: 'Mistral 7B' },
 ];
 
 export default function App() {
@@ -66,16 +66,18 @@ export default function App() {
   const [exampleStyle, setExampleStyle] = useState('');
   const [selectedStyleId, setSelectedStyleId] = useState<string>('');
   const [fileName, setFileName] = useState<string | null>(null);
-  const [apiKey, setApiKey] = useState('');
+  const [ollamaBaseUrl, setOllamaBaseUrl] = useState('http://localhost:11434');
   const [modelName, setModelName] = useState(MODEL_OPTIONS[0].id);
 
   useEffect(() => {
-    const savedKey = sessionStorage.getItem('benjutester_gemini_api_key');
+    const savedBaseUrl = localStorage.getItem('benjutester_ollama_base_url');
     const savedModel = localStorage.getItem('benjutester_model_name');
 
-    if (savedKey) setApiKey(savedKey);
-    if (savedModel && MODEL_OPTIONS.some((m) => m.id === savedModel)) {
-      setModelName(savedModel);
+    const trimmedBaseUrl = savedBaseUrl?.trim();
+    if (trimmedBaseUrl) setOllamaBaseUrl(trimmedBaseUrl);
+    const trimmedModel = savedModel?.trim();
+    if (trimmedModel) {
+      setModelName(trimmedModel);
     }
   }, []);
 
@@ -119,9 +121,9 @@ export default function App() {
       return;
     }
 
-    const configuredApiKey = apiKey.trim() || process.env.GEMINI_API_KEY || '';
-    if (!configuredApiKey) {
-      setError('Debes configurar una API Key de Gemini para generar pruebas.');
+    const configuredBaseUrl = ollamaBaseUrl.trim().replace(/\/+$/, '');
+    if (!configuredBaseUrl) {
+      setError('Debes configurar la URL base de Ollama.');
       return;
     }
 
@@ -130,8 +132,6 @@ export default function App() {
     setGeneratedTests(null);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: configuredApiKey });
-      
       const example_section = exampleStyle.trim() 
         ? `AQUÍ TIENES UN EJEMPLO DEL ESTILO DE PRUEBAS QUE PREFIERO (úsalo como guía de estilo):\n\`\`\`python\n${exampleStyle}\n\`\`\``
         : "";
@@ -150,12 +150,29 @@ export default function App() {
         .replace('{example_section}', example_section)
         .replace('{style_instruction}', style_instruction);
 
-      const response = await ai.models.generateContent({
-        model: modelName,
-        contents: prompt,
+      const response = await fetch(`${configuredBaseUrl}/api/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: modelName,
+          prompt,
+          stream: false,
+        }),
       });
 
-      let text = response.text || '';
+      if (!response.ok) {
+        throw new Error(`Ollama respondió con estado ${response.status}`);
+      }
+
+      const data: { response?: string; error?: string } = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      let text = data.response || '';
       
       // Clean up markdown fences if present
       text = text.replace(/^```python\n?/, '').replace(/\n?```$/, '');
@@ -163,7 +180,7 @@ export default function App() {
       setGeneratedTests(text);
     } catch (err) {
       console.error(err);
-      setError('Ocurrió un error al generar las pruebas. Por favor, intenta de nuevo.');
+      setError('Ocurrió un error al generar pruebas con Ollama. Verifica que esté activo y que el modelo exista.');
     } finally {
       setIsLoading(false);
     }
@@ -211,39 +228,43 @@ export default function App() {
             <div className="space-y-2">
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">⚙️ Configuración</h3>
               <div className="space-y-1">
-                <label className="text-sm text-slate-300">API Key de Gemini</label>
+                <label className="text-sm text-slate-300">URL base de Ollama</label>
                 <div className="relative">
                   <input 
-                    type="password" 
-                    value={apiKey}
+                    type="text" 
+                    value={ollamaBaseUrl}
                     onChange={(e) => {
                       const nextValue = e.target.value;
-                      setApiKey(nextValue);
-                      sessionStorage.setItem('benjutester_gemini_api_key', nextValue);
+                      setOllamaBaseUrl(nextValue);
+                      localStorage.setItem('benjutester_ollama_base_url', nextValue);
                     }}
-                    placeholder="Pega aquí tu API Key"
+                    placeholder="http://localhost:11434"
                     className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500 transition-colors"
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">Se guarda en esta pestaña (persiste al recargar) y se borra al cerrarla.</p>
+                <p className="text-[10px] text-slate-500 mt-1">Ejemplo local: http://localhost:11434</p>
               </div>
 
               <div className="space-y-1">
                 <label className="text-sm text-slate-300">Modelo de IA</label>
-                <select
+                <input
+                  type="text"
+                  list="ollama-models"
                   value={modelName}
                   onChange={(e) => {
                     setModelName(e.target.value);
                     localStorage.setItem('benjutester_model_name', e.target.value);
                   }}
+                  placeholder="llama3.1:8b"
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500 transition-colors"
-                >
+                />
+                <datalist id="ollama-models">
                   {MODEL_OPTIONS.map((modelOption) => (
-                    <option key={modelOption.id} value={modelOption.id}>
+                    <option key={modelOption.id} value={modelOption.id} label={modelOption.label}>
                       {modelOption.label}
                     </option>
                   ))}
-                </select>
+                </datalist>
               </div>
             </div>
 

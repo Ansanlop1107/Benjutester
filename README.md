@@ -48,6 +48,7 @@ Publica la carpeta `dist/`.
 
 - La app permite introducir la API Key desde el navegador y la guarda en `sessionStorage` (persiste tras recargas en la misma pestaña y se borra al cerrar la pestaña/ventana).
 - Para uso público real (muchos usuarios), lo recomendable es mover la llamada a Gemini a un backend/proxy para no exponer claves de servidor.
+- **Aviso de seguridad:** introducir la API Key en cliente la hace accesible a scripts del navegador y visible desde DevTools; úsalo solo para pruebas personales o entornos controlados.
 
 ## IA recomendada para este caso
 

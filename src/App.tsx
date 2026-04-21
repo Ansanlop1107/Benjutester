@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { 
   Beaker, 
@@ -14,14 +14,7 @@ import {
   AlertCircle, 
   CheckCircle2,
   Trash2,
-  BookOpen,
   LayoutTemplate,
-  Info,
-  LogIn,
-  LogOut,
-  User as UserIcon,
-  Lock,
-  User as UserInputIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { TEST_STYLES } from './constants';
@@ -63,30 +56,28 @@ INSTRUCCIONES DE FORMATO:
    \`\`\`
 `;
 
+const MODEL_OPTIONS = [
+  { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (rápido y económico)' },
+  { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro (mayor calidad)' },
+];
+
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
-  const [authError, setAuthError] = useState<string | null>(null);
   const [description, setDescription] = useState('');
   const [exampleStyle, setExampleStyle] = useState('');
   const [selectedStyleId, setSelectedStyleId] = useState<string>('');
   const [fileName, setFileName] = useState<string | null>(null);
+  const [apiKey, setApiKey] = useState('');
+  const [modelName, setModelName] = useState(MODEL_OPTIONS[0].id);
 
-  const handleLogin = (e: any) => {
-    e.preventDefault();
-    if (loginForm.username === 'admin' && loginForm.password === 'admin') {
-      setIsLoggedIn(true);
-      setAuthError(null);
-    } else {
-      setAuthError('Credenciales incorrectas. Intente con admin/admin.');
+  useEffect(() => {
+    const savedKey = sessionStorage.getItem('benjutester_gemini_api_key');
+    const savedModel = localStorage.getItem('benjutester_model_name');
+
+    if (savedKey) setApiKey(savedKey);
+    if (savedModel && MODEL_OPTIONS.some((m) => m.id === savedModel)) {
+      setModelName(savedModel);
     }
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setLoginForm({ username: '', password: '' });
-    reset();
-  };
+  }, []);
 
   const handleStyleSelect = (id: string) => {
     setSelectedStyleId(id);
@@ -128,12 +119,18 @@ export default function App() {
       return;
     }
 
+    const configuredApiKey = apiKey.trim() || process.env.GEMINI_API_KEY || '';
+    if (!configuredApiKey) {
+      setError('Debes configurar una API Key de Gemini para generar pruebas.');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setGeneratedTests(null);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const ai = new GoogleGenAI({ apiKey: configuredApiKey });
       
       const example_section = exampleStyle.trim() 
         ? `AQUÍ TIENES UN EJEMPLO DEL ESTILO DE PRUEBAS QUE PREFIERO (úsalo como guía de estilo):\n\`\`\`python\n${exampleStyle}\n\`\`\``
@@ -154,7 +151,7 @@ export default function App() {
         .replace('{style_instruction}', style_instruction);
 
       const response = await ai.models.generateContent({
-        model: "gemini-3.1-pro-preview",
+        model: modelName,
         contents: prompt,
       });
 
@@ -198,83 +195,6 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-[#0f172a] text-slate-200 font-sans selection:bg-indigo-500/30 overflow-hidden">
-      <AnimatePresence>
-        {!isLoggedIn && (
-          <motion.div 
-            key="login-screen"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#0f172a]"
-          >
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="max-w-md w-full bg-slate-900/50 backdrop-blur-xl border border-slate-700/50 p-10 rounded-3xl shadow-2xl flex flex-col items-center gap-8"
-            >
-              <div className="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-indigo-600/40">
-                <Beaker size={48} strokeWidth={1.5} />
-              </div>
-              
-              <div className="space-y-2 text-center">
-                <h1 className="text-4xl font-bold text-white tracking-tight">Benjutester</h1>
-                <p className="text-slate-400 text-sm">
-                  Ingrese sus credenciales de administrador
-                </p>
-              </div>
-
-              <form onSubmit={handleLogin} className="w-full space-y-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Usuario</label>
-                  <div className="relative">
-                    <UserInputIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                    <input 
-                      type="text" 
-                      value={loginForm.username}
-                      onChange={(e) => setLoginForm(prev => ({ ...prev, username: e.target.value }))}
-                      required
-                      placeholder="admin"
-                      className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none focus:border-indigo-500 transition-colors"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Contraseña</label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                    <input 
-                      type="password" 
-                      value={loginForm.password}
-                      onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                      required
-                      placeholder="••••••••"
-                      className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none focus:border-indigo-500 transition-colors"
-                    />
-                  </div>
-                </div>
-
-                {authError && (
-                  <p className="text-xs text-red-400 font-medium text-center">{authError}</p>
-                )}
-
-                <button
-                  type="submit"
-                  className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-500 transition-all active:scale-[0.98] shadow-lg shadow-indigo-600/20"
-                >
-                  <LogIn size={18} />
-                  Entrar al Sistema
-                </button>
-              </form>
-
-              <p className="text-slate-500 text-[10px] uppercase tracking-widest font-bold">
-                Acceso restringido
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Sidebar */}
       <aside className="w-72 bg-slate-800/50 border-r border-slate-700 p-6 flex flex-col gap-6">
         <div className="space-y-4">
@@ -295,14 +215,35 @@ export default function App() {
                 <div className="relative">
                   <input 
                     type="password" 
-                    value="••••••••••••••••" 
-                    disabled
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-400 outline-none cursor-not-allowed"
+                    value={apiKey}
+                    onChange={(e) => {
+                      const nextValue = e.target.value;
+                      setApiKey(nextValue);
+                      sessionStorage.setItem('benjutester_gemini_api_key', nextValue);
+                    }}
+                    placeholder="Pega aquí tu API Key"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500 transition-colors"
                   />
-                  <div className="absolute inset-y-0 right-3 flex items-center text-xs text-slate-500">
-                    Auto
-                  </div>
                 </div>
+                <p className="text-[10px] text-slate-500 mt-1">Se guarda en esta pestaña (persiste al recargar) y se borra al cerrarla.</p>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-sm text-slate-300">Modelo de IA</label>
+                <select
+                  value={modelName}
+                  onChange={(e) => {
+                    setModelName(e.target.value);
+                    localStorage.setItem('benjutester_model_name', e.target.value);
+                  }}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500 transition-colors"
+                >
+                  {MODEL_OPTIONS.map((modelOption) => (
+                    <option key={modelOption.id} value={modelOption.id}>
+                      {modelOption.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -333,12 +274,12 @@ export default function App() {
           </div>
         </div>
 
-        <button 
+        <button
           onClick={reset}
           className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-medium px-2 py-1"
         >
           <Trash2 size={16} />
-          Limpiar sesión
+          Limpiar formulario
         </button>
       </aside>
 
@@ -352,26 +293,8 @@ export default function App() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            {isLoggedIn && (
-              <div className="flex items-center gap-3 bg-slate-800/40 border border-slate-700/50 px-3 py-1.5 rounded-xl">
-                <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center text-indigo-400 flex-shrink-0">
-                  <UserIcon size={16} />
-                </div>
-                <div className="text-left">
-                  <p className="text-[11px] font-bold text-white leading-none">Administrador</p>
-                  <p className="text-[9px] text-slate-500 mt-1 leading-none">admin@benjutester.local</p>
-                </div>
-                <button 
-                  onClick={handleLogout}
-                  className="ml-1 p-1 text-slate-500 hover:text-red-400 transition-colors"
-                  title="Cerrar sesión"
-                >
-                  <LogOut size={14} />
-                </button>
-              </div>
-            )}
             <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-medium h-fit whitespace-nowrap">
-              Gemini 3.1 Pro
+              {modelName}
             </span>
           </div>
         </div>

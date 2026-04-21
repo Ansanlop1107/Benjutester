@@ -73,7 +73,8 @@ export default function App() {
     const savedBaseUrl = localStorage.getItem('benjutester_ollama_base_url');
     const savedModel = localStorage.getItem('benjutester_model_name');
 
-    if (savedBaseUrl) setOllamaBaseUrl(savedBaseUrl);
+    const trimmedBaseUrl = savedBaseUrl?.trim();
+    if (trimmedBaseUrl) setOllamaBaseUrl(trimmedBaseUrl);
     const trimmedModel = savedModel?.trim();
     if (trimmedModel) {
       setModelName(trimmedModel);
@@ -259,7 +260,7 @@ export default function App() {
                 />
                 <datalist id="ollama-models">
                   {MODEL_OPTIONS.map((modelOption) => (
-                    <option key={modelOption.id} value={modelOption.id}>
+                    <option key={modelOption.id} value={modelOption.id} label={modelOption.label}>
                       {modelOption.label}
                     </option>
                   ))}

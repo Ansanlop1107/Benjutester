@@ -74,8 +74,8 @@ export default function App() {
     const savedModel = localStorage.getItem('benjutester_model_name');
 
     if (savedBaseUrl) setOllamaBaseUrl(savedBaseUrl);
-    if (savedModel) {
-      setModelName(savedModel);
+    if (savedModel?.trim()) {
+      setModelName(savedModel.trim());
     }
   }, []);
 
@@ -254,6 +254,9 @@ export default function App() {
                     localStorage.setItem('benjutester_model_name', e.target.value);
                   }}
                   placeholder="llama3.1:8b"
+                  aria-autocomplete="list"
+                  role="combobox"
+                  aria-controls="ollama-models"
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500 transition-colors"
                 />
                 <datalist id="ollama-models">

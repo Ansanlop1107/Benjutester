@@ -225,7 +225,7 @@ export default function App() {
                     className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500 transition-colors"
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">Se guarda en la sesión del navegador y se borra al cerrar la pestaña.</p>
+                <p className="text-[10px] text-slate-500 mt-1">Se guarda en la sesión (persiste al recargar) y se borra al cerrar la pestaña/ventana.</p>
               </div>
 
               <div className="space-y-1">

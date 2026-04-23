@@ -56,14 +56,7 @@ Publica la carpeta `dist/`.
 - La app llama a la API HTTP de Ollama (por defecto `http://localhost:11434`).
 - Debes tener descargado el modelo que pongas en el campo de modelo (por ejemplo, `llama3.1:8b`).
 - Si usas otro host/puerto, ajusta la URL base en la barra lateral.
-
-## ¿Tiene sentido incluir IA aquí?
-
-Sí, porque el valor del producto depende directamente de generar tests automáticamente.
-
-Si quieres minimizar coste:
-- usa **Gemini 2.5 Flash** como modelo por defecto,
-- limita longitud de prompts/código,
-- y aplica caché o reintentos controlados.
-
-Con Ollama local evitas cuotas de APIs externas, pero dependes de los recursos de tu propia máquina.
+- Debes installar ollama previamente
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```

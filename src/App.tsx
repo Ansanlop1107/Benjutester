@@ -59,6 +59,7 @@ const MODEL_OPTIONS = [
   { id: 'llama3.1:8b', label: 'Llama 3.1 8B' },
   { id: 'qwen2.5-coder:7b', label: 'Qwen 2.5 Coder 7B' },
   { id: 'mistral:7b', label: 'Mistral 7B' },
+  { id:'phi3', label:'Phi 3' },
 ];
 
 export default function App() {
@@ -96,6 +97,36 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const buildNetworkHint = (targetBaseUrl: string) => {
+    try {
+      const targetUrl = new URL(targetBaseUrl);
+      const appProtocol = window.location.protocol;
+      const isMixedContent = appProtocol === 'https:' && targetUrl.protocol === 'http:';
+
+      if (isMixedContent) {
+        return `La app corre en HTTPS (${window.location.origin}) y Ollama en HTTP (${targetBaseUrl}). El navegador bloquea esta petición por mixed content.`;
+      }
+
+      return `No se pudo conectar con ${targetBaseUrl}. Verifica que Ollama esté activo y accesible desde este navegador/dispositivo.`;
+    } catch {
+      return `La URL de Ollama parece inválida: ${targetBaseUrl}`;
+    }
+  };
+
+  const buildOllamaServerHint = (detail: string) => {
+    const normalizedDetail = detail.toLowerCase();
+
+    if (normalizedDetail.includes('runner process has terminated')) {
+      return [
+        'Ollama devolvió un error interno: el proceso del modelo (runner) se cerró inesperadamente.',
+        'Suele ocurrir por memoria insuficiente, runner inestable o modelo corrupto.',
+        'Prueba esto en orden: 1) reinicia Ollama, 2) usa un modelo más pequeño, 3) vuelve a descargar el modelo (ollama pull).',
+      ].join(' ');
+    }
+
+    return null;
+  };
+
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -127,6 +158,10 @@ export default function App() {
       return;
     }
 
+    const isSecureApp = window.location.protocol === 'https:';
+    const isInsecureOllama = /^http:\/\//i.test(configuredBaseUrl);
+    const useSecureRelay = isSecureApp && isInsecureOllama;
+
     setIsLoading(true);
     setError(null);
     setGeneratedTests(null);
@@ -150,11 +185,18 @@ export default function App() {
         .replace('{example_section}', example_section)
         .replace('{style_instruction}', style_instruction);
 
-      const response = await fetch(`${configuredBaseUrl}/api/generate`, {
+      const requestUrl = useSecureRelay ? '/api/ollama/generate' : `${configuredBaseUrl}/api/generate`;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (useSecureRelay) {
+        headers['X-Ollama-Base-Url'] = configuredBaseUrl;
+      }
+
+      const response = await fetch(requestUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           model: modelName,
           prompt,
@@ -162,11 +204,24 @@ export default function App() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Ollama respondió con estado ${response.status}`);
+      const rawResponse = await response.text();
+      let data: { response?: string; error?: string } = {};
+
+      if (rawResponse.trim()) {
+        try {
+          data = JSON.parse(rawResponse);
+        } catch {
+          if (!response.ok) {
+            throw new Error(`Ollama respondió con estado ${response.status}: ${rawResponse}`);
+          }
+          throw new Error('La respuesta de Ollama no es JSON válido.');
+        }
       }
 
-      const data: { response?: string; error?: string } = await response.json();
+      if (!response.ok) {
+        const serverMessage = data.error?.trim() || rawResponse.trim() || 'Sin detalle del servidor.';
+        throw new Error(`Ollama respondió con estado ${response.status}: ${serverMessage}`);
+      }
 
       if (data.error) {
         throw new Error(data.error);
@@ -179,8 +234,26 @@ export default function App() {
       
       setGeneratedTests(text);
     } catch (err) {
-      console.error(err);
-      setError('Ocurrió un error al generar pruebas con Ollama. Verifica que esté activo y que el modelo exista.');
+      console.error('Error al generar pruebas con Ollama:', {
+        error: err,
+        modelName,
+        ollamaBaseUrl: configuredBaseUrl,
+      });
+
+      if (err instanceof TypeError && /Failed to fetch/i.test(err.message)) {
+        const networkHint = buildNetworkHint(configuredBaseUrl);
+        setError(`No se pudo realizar la petición a Ollama (Failed to fetch). ${networkHint}`);
+        return;
+      }
+
+      const detail = err instanceof Error ? err.message : 'Error desconocido.';
+      const ollamaHint = buildOllamaServerHint(detail);
+      if (ollamaHint) {
+        setError(`${ollamaHint} Detalle técnico: ${detail}`);
+        return;
+      }
+
+      setError(`Ocurrió un error al generar pruebas con Ollama. Detalle: ${detail}`);
     } finally {
       setIsLoading(false);
     }

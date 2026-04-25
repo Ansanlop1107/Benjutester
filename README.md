@@ -33,4 +33,4 @@ Actualmente, el proyecto se divide en las siguientes ramas para soportar distint
 - **`main`**: Contiene la información general y la documentación base del proyecto.
 - **`branch-local`**: Implementación configurada para ejecutar modelos de IA de forma **local** (ej. mediante Ollama). No requiere conexión a internet ni consumo de APIs de pago. *Requisito: Se recomienda disponer de un equipo con hardware potente y suficiente memoria RAM.*
 - **`branch-gemini`**: Implementación que utiliza la API de **Google Gemini** para la generación de las pruebas.
-- **`branch-2`**: Implementación reservada para utilizar la API de un proveedor alternativo en el futuro.
+- **`branch-openroute`**: Implementación que utiliza la API de **Openrouter** para la generación de las pruebas.

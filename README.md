@@ -1,3 +1,5 @@
+<img width="1536" height="1024" alt="benjutester" src="https://github.com/user-attachments/assets/814a2f37-520a-4497-9f27-4165a7693389" />
+
 # 🧪 Benjutester
 
 **Benjutester** es una aplicación web diseñada para generar scripts de **Pruebas Unitarias en Python** utilizando el módulo `unittest`.
@@ -19,6 +21,10 @@ A partir de la información proporcionada, el programa estructura un prompt avan
 
 > [!WARNING]
 > **Supervisión humana requerida:** Recuerda que el código generado por Inteligencia Artificial puede contener alucinaciones o imprecisiones. Es imprescindible revisar y probar siempre el script generado antes de distribuirlo a los alumnos o integrarlo en un sistema de evaluación automática.
+
+> [!INFO]
+> El prompt establecido se puede modificar a gusto del profesor, en funcion de sus preferencias.
+
 
 ## 🌿 Ramas del repositorio
 

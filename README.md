@@ -22,7 +22,7 @@ A partir de la información proporcionada, el programa estructura un prompt avan
 > [!WARNING]
 > **Supervisión humana requerida:** Recuerda que el código generado por Inteligencia Artificial puede contener alucinaciones o imprecisiones. Es imprescindible revisar y probar siempre el script generado antes de distribuirlo a los alumnos o integrarlo en un sistema de evaluación automática.
 
-> [!INFO]
+> [!NOTE]
 > El prompt establecido se puede modificar a gusto del profesor, en funcion de sus preferencias.
 
 

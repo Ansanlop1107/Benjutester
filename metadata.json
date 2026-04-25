@@ -1,6 +1,0 @@
-{
-  "name": "Benjutester",
-  "description": "Herramienta educativa para generar scripts de unittest en Python a partir de soluciones de profesores, ayudando a los alumnos a autoevaluar su código.",
-  "requestFramePermissions": [],
-  "majorCapabilities": []
-}

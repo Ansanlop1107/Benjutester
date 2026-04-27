@@ -34,3 +34,8 @@ Actualmente, el proyecto se divide en las siguientes ramas para soportar distint
 - **`branch-local`**: Implementación configurada para ejecutar modelos de IA de forma **local** (ej. mediante Ollama). No requiere conexión a internet ni consumo de APIs de pago. *Requisito: Se recomienda disponer de un equipo con hardware potente y suficiente memoria RAM.*
 - **`branch-gemini`**: Implementación que utiliza la API de **Google Gemini** para la generación de las pruebas.
 - **`branch-openroute`**: Implementación que utiliza la API de **Openrouter** para la generación de las pruebas.
+
+## 🎓Contribuciones
+- Toda ayuda para mejorar el proyecto es bienvenida, asi que si quieres hacer alguna contribución, hazla sin compromiso!!
+
+> Made with 💚 by [Ansanlop1107](https://github.com/Ansanlop1107) 

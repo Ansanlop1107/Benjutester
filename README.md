@@ -25,6 +25,12 @@ A partir de la información proporcionada, el programa estructura un prompt avan
 > [!NOTE]
 > El prompt establecido se puede modificar a gusto del profesor, en funcion de sus preferencias.
 
+> [!IMPORTANT]
+> Este proyecto utiliza la librería `unittesting_utils`, cuya autoría no me pertenece.
+> Actualmente se utiliza únicamente con fines educativos.
+> 
+> Estoy pendiente de confirmar con el autor (profesor) si se puede incluir o redistribuir públicamente.
+> En caso necesario, esta dependencia será eliminada o sustituida.
 
 ## 🌿 Ramas del repositorio
 
@@ -35,7 +41,17 @@ Actualmente, el proyecto se divide en las siguientes ramas para soportar distint
 - **`branch-gemini`**: Implementación que utiliza la API de **Google Gemini** para la generación de las pruebas.
 - **`branch-openroute`**: Implementación que utiliza la API de **Openrouter** para la generación de las pruebas.
 
-## 🎓Contribuciones
-- Toda ayuda para mejorar el proyecto es bienvenida, asi que si quieres hacer alguna contribución, hazla sin compromiso!!
+## 🎓 Contribuciones
+
+Las contribuciones son bienvenidas.
+
+Si quieres mejorar el proyecto, puedes:
+- abrir una issue para proponer cambios o reportar problemas
+- enviar un pull request con mejoras
+
+Cualquier ayuda es apreciada, especialmente en:
+- mejora de generación de tests
+- optimización del código
+- documentación
 
 > Made with 💚 by [Ansanlop1107](https://github.com/Ansanlop1107) 

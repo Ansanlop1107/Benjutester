@@ -79,4 +79,4 @@ Una vez dentro de la web de Benjutester, los pasos a seguir son:
 > **Supervisión humana requerida:** Recuerda que la información proporcionada por la IA generativa no siempre es 100% infalible. Es muy recomendable revisar el código generado, ejecutarlo para comprobar que funciona correctamente y corregir posibles "alucinaciones" antes de entregarlo a los alumnos.
 
 > [!TIP]
-> Recuerda que la cuouta gratis de gemini no es muy amplia, por lo que es recomendable mejorar la prueba unitaria personalmente una vez generada por la IA antes que volverle a pedir otra para el mismo ejercicio.
+> Recuerda que la cuota gratis de gemini no es muy amplia, por lo que es recomendable mejorar la prueba unitaria personalmente una vez generada por la IA antes que volverle a pedir otra para el mismo ejercicio.

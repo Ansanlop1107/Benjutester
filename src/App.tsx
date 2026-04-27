@@ -33,6 +33,7 @@ El código que te proporcionaré es la **SOLUCIÓN CORRECTA**. Por lo tanto, tod
     * Usa \`ututils.get_mro_nms(Clase)\` y \`ututils.get_pubmths_nms(Clase)\` para tests estructurales.
     * **REGLA DE ORO PARA I/O:** Para capturar la salida de \`print\`, usa SIEMPRE \`iocapture.get_stdout_value()\`. Prohibido cualquier otro método como \`get_stdout\`.
     * **MENSAJES DE ERROR:** Utiliza \`ututils.crear_mensaje_error(actual, esperado, str2repr=False)\` para construir mensajes de error detallados en comparaciones de hileras largas o colecciones.
+    * **TRATAMIENTO DE EXCEPCIONES (CRÍTICO):** Si el código de la solución lanza una excepción (ej: \`raise JarraError(...)\`) ante ciertos datos de entrada o estados, el test DEBE validar que se lanza dicha excepción usando \`with self.assertRaises(modsol.NombreError):\`. Un test NUNCA debe fallar (error) por una excepción que la propia solución emite intencionadamente para validar datos.
 
 ### ARQUITECTURA Y ROBUSTEZ:
 

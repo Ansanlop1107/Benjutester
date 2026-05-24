@@ -28,9 +28,6 @@ A partir de la información proporcionada, el programa estructura un prompt avan
 > [!IMPORTANT]
 > Este proyecto utiliza la librería `unittesting_utils`, cuya autoría no me pertenece.
 > Actualmente se utiliza únicamente con fines educativos.
-> 
-> Estoy pendiente de confirmar con el autor (profesor) si se puede incluir o redistribuir públicamente.
-> En caso necesario, esta dependencia será eliminada o sustituida.
 
 ## 🌿 Ramas del repositorio
 

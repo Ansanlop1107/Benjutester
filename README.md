@@ -94,7 +94,7 @@ Para ejecutar Benjutester localmente en tu ordenador, necesitas tener instalado:
 
 ## 📦 Dependencias de Pruebas (`unittesting_utils.py`)
 
-Las pruebas generadas de manera predeterminada por la IA hacen uso de utilidades avanzadas para evaluar el código del alumno. Asegúrate de incluir el archivo [unittesting_utils.py](file:///d:/Benjutester/unittesting_utils.py) en el mismo directorio donde se ejecuten los tests. Este módulo contiene clases y helpers indispensables como:
+Las pruebas generadas de manera predeterminada por la IA hacen uso de utilidades avanzadas para evaluar el código del alumno. Asegúrate de incluir el archivo `unittesting_utils.py` en el mismo directorio donde se ejecuten los tests. Este módulo contiene clases y helpers indispensables como:
 *   `Timeout` para limitar la ejecución de bucles infinitos.
 *   `IOCapture` para capturar e inyectar de forma segura entradas y salidas de consola.
 *   Funciones de normalización de textos, análisis estructural de clases y MRO.

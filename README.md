@@ -101,4 +101,16 @@ Las pruebas generadas de manera predeterminada por la IA hacen uso de utilidades
 
 ---
 
+## 🤝 Contribución y Colaboración
+
+Si deseas colaborar con el proyecto, para mejorarlo o corregir errores, ¡las contribuciones son bienvenidas! 
+
+Puedes:
+*   Abrir una **Issue** para sugerir mejoras o informar de fallos.
+*   Enviar un **Pull Request** con correcciones de código, optimizaciones o mejoras en la documentación.
+
+Toda ayuda es enormemente apreciada.
+
+---
+
 > Made with 💚 by [Ansanlop1107](https://github.com/Ansanlop1107)

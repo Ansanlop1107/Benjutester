@@ -8,6 +8,28 @@ Esta herramienta está pensada para docentes y desarrolladores que buscan automa
 
 ---
 
+### 🛠️ Tecnologías Utilizadas
+
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75C2?style=for-the-badge&logo=google-gemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+
+---
+
+> [!WARNING]
+> **Supervisión humana requerida:** Recuerda que el código generado por Inteligencia Artificial puede contener alucinaciones o imprecisiones. Es imprescindible revisar y probar siempre el script generado antes de distribuirlo a los alumnos o integrarlo en un sistema de evaluación automática.
+
+> [!NOTE]
+> El prompt establecido se puede modificar a gusto del profesor, en función de sus preferencias.
+
+> [!IMPORTANT]
+> Este proyecto utiliza la librería `unittesting_utils`, cuya autoría no me pertenece. Actualmente se utiliza únicamente con fines educativos.
+
+---
+
 ## ⚡ Características Principales (Versión V2)
 
 1.  **Entorno de Trabajo Drag & Drop:** Olvídate de copiar y pegar código. Arrastra y suelta tus archivos Python (`.py`) directamente sobre la interfaz para cargarlos al instante.
